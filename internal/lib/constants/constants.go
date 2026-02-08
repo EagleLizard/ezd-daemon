@@ -14,9 +14,14 @@ import (
 const parentLvls = 4
 
 var LocalDir string
+var LogDir string
+var LogFilePath string
 
 func init() {
-	LocalDir = filepath.Join(BaseDir(), "_local")
+	bd := BaseDir()
+	LocalDir = filepath.Join(bd, "_local")
+	LogDir = filepath.Join(bd, "logs")
+	LogFilePath = filepath.Join(LogDir, "app.log")
 }
 
 func BaseDir() string {
