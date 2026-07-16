@@ -31,6 +31,12 @@ Start the service:
 systemctl start ezd-daemon
 ```
 
+Stop the service: 
+
+```shell
+systemctl stop ezd-daemon
+```
+
 To automatically start on boot:
 
 ```shell

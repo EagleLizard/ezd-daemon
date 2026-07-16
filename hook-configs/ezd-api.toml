@@ -1,0 +1,8 @@
+
+desc = "Ezd API"
+
+[repo]
+  name = "ezd-api-rc2"
+[scripts]
+  stop = "./ghscripts/ezd-api.sh -s"
+  start = "./ghscripts/ezd-api.sh -r"

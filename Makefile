@@ -10,4 +10,4 @@ build:
 run:
 	./$(GO_BIN_PATH)
 watch: build
-	air -c air.toml --build.cmd "make build" --build.bin "make run"
+	go tool air -c air.toml --build.cmd "make build" --build.entrypoint "$(GO_BIN_PATH)"

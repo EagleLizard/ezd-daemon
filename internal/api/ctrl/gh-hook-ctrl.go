@@ -8,11 +8,15 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/EagleLizard/ezd-daemon/internal/lib/config"
+	"github.com/EagleLizard/ezd-daemon/internal/lib/config/jobconfig"
 	"github.com/EagleLizard/ezd-daemon/internal/lib/logging"
 	gh "github.com/EagleLizard/ezd-daemon/internal/lib/model/github"
+	"github.com/EagleLizard/ezd-daemon/internal/lib/model/jobdef"
 )
 
 /*
@@ -54,7 +58,9 @@ func PostGhHook(cfg *config.EzdDConfigType) http.HandlerFunc {
 		/* pass to relevant handler based on action */
 		switch event {
 		case "push":
-			pushHandler(body)
+			if err := pushHandler(body); err != nil {
+				logging.Logger.Sugar().Error(err)
+			}
 		default:
 			logging.Logger.Sugar().Infof("Unhandled event: %s", event)
 		}
@@ -78,9 +84,20 @@ func pushHandler(body []byte) error {
 			- deploy validation:
 				- on failure, rollback. Nice to have.
 	*/
+	jobDefs := jobconfig.JobDefs
+	fmt.Print("job defs:\n")
+	fmt.Printf("%v\n", jobDefs)
+	fmt.Printf("%+v\n", jobconfig.GetDef("etc"))
+	jd := jobconfig.GetDef(ghp.Repository.Name)
+	fmt.Printf("jd: %+v\n", jd)
+
+	if jd == nil {
+		return fmt.Errorf("GH_0.1: No config for repo %s", ghp.Repository.Name)
+	}
+
 	switch ghp.Repository.Name {
 	case "ezd-api-rc2":
-		ezdApiRc2(ghp)
+		ezdApiRc2(jd, ghp)
 	default:
 		logging.Logger.Sugar().Infow(fmt.Sprintf("no config for repo '%s'", ghp.Repository.Name))
 	}
@@ -93,8 +110,18 @@ func pushHandler(body []byte) error {
 	return nil
 }
 
-func ezdApiRc2(ghp gh.GhPushPayload) {
+func ezdApiRc2(jd *jobdef.JobDef, ghp gh.GhPushPayload) {
 	fmt.Printf("ezd api rc2 cfg !!! \n")
+	splat := strings.Split(jd.Scripts.Stop, " ")
+	cmdStr := splat[0]
+	args := splat[1:]
+	fmt.Printf("script: %v\ncmdStr: %v\nargs: %v\n", splat, cmdStr, args)
+
+	cmd := exec.Command(cmdStr, args...)
+	cmd.Stdout = os.Stdout
+	if err := cmd.Run(); err != nil {
+		fmt.Printf("%v\n", err)
+	}
 }
 
 func validatePayload(body []byte, signature string) (bool, error) {
