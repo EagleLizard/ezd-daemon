@@ -61,6 +61,8 @@ func PostGhHook(cfg *config.EzdDConfigType) http.HandlerFunc {
 			if err := pushHandler(body); err != nil {
 				logging.Logger.Sugar().Error(err)
 			}
+		case "ping":
+			fmt.Fprint(w, "pong")
 		default:
 			logging.Logger.Sugar().Infof("Unhandled event: %s", event)
 		}
