@@ -86,10 +86,6 @@ func pushHandler(body []byte) error {
 			- deploy validation:
 				- on failure, rollback. Nice to have.
 	*/
-	jobDefs := jobconfig.JobDefs
-	fmt.Print("job defs:\n")
-	fmt.Printf("%v\n", jobDefs)
-	fmt.Printf("%+v\n", jobconfig.GetDef("etc"))
 	jd := jobconfig.GetDef(ghp.Repository.Name)
 	fmt.Printf("jd: %+v\n", jd)
 
@@ -114,12 +110,13 @@ func pushHandler(body []byte) error {
 
 func ezdApiRc2(jd *jobdef.JobDef, ghp gh.GhPushPayload) {
 	fmt.Printf("ezd api rc2 cfg !!! \n")
-	splat := strings.Split(jd.Scripts.Stop, " ")
+	splat := strings.Split(jd.Scripts.Gh_push, " ")
 	cmdStr := splat[0]
 	args := splat[1:]
 	fmt.Printf("script: %v\ncmdStr: %v\nargs: %v\n", splat, cmdStr, args)
 
 	cmd := exec.Command(cmdStr, args...)
+	cmd.Dir = config.EzdDConfig.ProjectRootDir
 	cmd.Stdout = os.Stdout
 	if err := cmd.Run(); err != nil {
 		fmt.Printf("%v\n", err)

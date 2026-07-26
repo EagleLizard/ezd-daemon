@@ -4,5 +4,6 @@ desc = "Ezd API"
 [repo]
   name = "ezd-api-rc2"
 [scripts]
+  gh_push = "./ghscripts/ezd-api.sh push"
   stop = "./ghscripts/ezd-api.sh -s"
   start = "./ghscripts/ezd-api.sh -r"

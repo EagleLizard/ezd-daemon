@@ -13,6 +13,7 @@ type EzdDConfigType struct {
 	Host               string
 	Port               string
 	EzdGhWebhookSecret string
+	ProjectRootDir     string
 }
 
 var EzdDConfig *EzdDConfigType
@@ -28,6 +29,7 @@ func init() {
 		Host:               getEnvVarOrDefault("EZD_D_HOST", "0.0.0.0"),
 		Port:               getEnvVarOrDefault("EZD_D_PORT", "4440"),
 		EzdGhWebhookSecret: getEnvVarOrDefault("EZD_GH_WEBHOOK_SECRET", ""),
+		ProjectRootDir:     getEnvVarOrDefault("PROJECT_ROOT_DIR", ""),
 	}
 	EzdDConfig = &cfg
 }

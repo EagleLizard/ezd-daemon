@@ -6,7 +6,8 @@ type JobDef struct {
 		Name string
 	}
 	Scripts struct {
-		Stop  string
-		Start string
+		Stop    string
+		Start   string
+		Gh_push string
 	}
 }
