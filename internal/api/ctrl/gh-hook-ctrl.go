@@ -58,15 +58,30 @@ func PostGhHook(cfg *config.EzdDConfigType) http.HandlerFunc {
 		/* pass to relevant handler based on action */
 		switch event {
 		case "push":
-			if err := pushHandler(body); err != nil {
-				logging.Logger.Sugar().Error(err)
+			/*
+				respond immediately as this can be a long-running operation.
+				TODO:xxx: push to a job queue instead
+			*/
+			w.WriteHeader(http.StatusOK)
+			if _, err := fmt.Fprint(w, "ok"); err != nil {
+				logging.Logger.Sugar().Error("Error writing hook response")
 			}
+			go func() {
+				/*
+					Run handler in goroutine to not block response.
+						see: https://stackoverflow.com/a/51515210/4677252
+				*/
+				if err := pushHandler(body); err != nil {
+					logging.Logger.Sugar().Error(err)
+				}
+			}()
 		case "ping":
 			fmt.Fprint(w, "pong")
+			w.WriteHeader(http.StatusOK)
 		default:
 			logging.Logger.Sugar().Infof("Unhandled event: %s", event)
+			w.WriteHeader(http.StatusForbidden)
 		}
-		w.WriteHeader(http.StatusOK)
 	}
 }
 
