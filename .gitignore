@@ -37,3 +37,4 @@ tmp
 out_data
 _local/
 ghscripts/
+ezd_daemon_pg_db_data

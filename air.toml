@@ -1,3 +1,4 @@
+#:schema https://json.schemastore.org/any.json
 
 [build]
-exclude_dir = ["logs"]
+exclude_dir = ["logs", "ezd_daemon_pg_db_data", "tmp"]
